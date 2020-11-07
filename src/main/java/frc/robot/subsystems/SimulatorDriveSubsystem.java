@@ -21,14 +21,14 @@ public class SimulatorDriveSubsystem extends SubsystemBase {
   private static final double ONE_BILLION = 1000000000.0;
   private final Supplier<ControlState> controlSupplier;
   private final Field2d field2d = new Field2d();
-  private final Pose2d velocity =  new Pose2d();
+  private Pose2d velocity;
   private long lastNanos = System.nanoTime();
   /**
    * Creates a new SimulatorDriveSubsystem.
    */
   public SimulatorDriveSubsystem(Supplier<ControlState> controlSupplier) {
     this.controlSupplier = controlSupplier;
-    velocity.getTranslation().plus(new Translation2d(0.1, 0.1));
+    velocity = new Pose2d(new Translation2d(1.0, 0.0), new Rotation2d());
     
   }
 
@@ -36,7 +36,7 @@ public class SimulatorDriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     long intervalNanos = System.nanoTime() - lastNanos;
-    ControlState state = controlSupplier.get();
+    //ControlState state = controlSupplier.get();
     Pose2d pose = field2d.getRobotPose();
     double intervalSeconds = intervalNanos / ONE_BILLION;
     Translation2d nextTranslation = pose.getTranslation().plus(velocity.getTranslation().times(intervalSeconds));

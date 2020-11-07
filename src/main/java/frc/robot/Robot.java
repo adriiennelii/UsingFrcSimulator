@@ -8,12 +8,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.DriveCommand;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.SimulatorDriveSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -23,15 +19,10 @@ import frc.robot.subsystems.DriveSubsystem;
  */
 public class Robot extends TimedRobot {
 
-    private final DriveSubsystem driveSubsystem;
-  private final DriveCommand driveCommand;
-  private final XboxController xboxController;
+  private final SimulatorDriveSubsystem driveSubsystem = new SimulatorDriveSubsystem(null);
 
   public Robot() {
     super(0.01); // Let's use a 10ms iteration time
-    xboxController = new XboxController(1);
-    driveSubsystem = new DriveSubsystem();
-    driveCommand = new DriveCommand(driveSubsystem, () -> xboxController.getY(Hand.kLeft), () -> xboxController.getY(Hand.kRight));
   }
 
   /**
