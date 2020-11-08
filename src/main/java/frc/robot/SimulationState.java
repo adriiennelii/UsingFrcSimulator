@@ -6,6 +6,10 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
 import frc.robot.util.Field2d;
 
 public class SimulationState {
+
+    // Where are we going? (4.0, 4.0)! When? REAL SOON!
+    private final Translation2d target = new Translation2d(4.0, 4.0);
+
     public static class SpeedPair {
 	    public final double linear;
 	    public final double rotational;
@@ -39,7 +43,7 @@ public class SimulationState {
         return field2d.getRobotPose();
     }
 
-    public void setPosition(Pose2d position) {
+    public void setRobotPosition(Pose2d position) {
         field2d.setRobotPose(position);
     }
 
@@ -59,6 +63,10 @@ public class SimulationState {
         this.robotRotationalSpeed = robotRotationalSpeed;
     }
 
+    public Translation2d getTargetPosition() {
+        return target;
+    }
+
 	public static void updateSimulationState(SimulationState simulationState, double linearAcceleration, double rotationalAcceleration) {
 	    long now = System.nanoTime();
 	    long intervalNanos = now - simulationState.lastNanos;
@@ -70,7 +78,7 @@ public class SimulationState {
 	    double currentLinearSpeed = simulationState.getRobotLinearSpeed();
 	    double currentRotationalSpeed = simulationState.getRobotRotationalSpeed();
 	    Pose2d nextPosition = calculateNextPosition(currentPosition, currentLinearSpeed, currentRotationalSpeed, intervalSeconds);
-	    simulationState.setPosition(nextPosition);
+	    simulationState.setRobotPosition(nextPosition);
 	    SimulationState.SpeedPair nextVelocity = calculateNextVelocity(currentLinearSpeed, currentRotationalSpeed, intervalSeconds, linearAcceleration, rotationalAcceleration);
 	    simulationState.setRobotLinearSpeed(nextVelocity.linear);
 	    simulationState.setRobotRotationalSpeed(nextVelocity.rotational);

@@ -21,5 +21,4 @@ public class MagicPositionSensor {
     public double getRobotRotationalSpeed() {
         return simulationState.getRobotRotationalSpeed();
     }
-
 }

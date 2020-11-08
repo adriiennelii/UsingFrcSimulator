@@ -18,8 +18,6 @@ public class AutoDriveCommand extends CommandBase {
   private final SimulatorDriveSubsystem driveSubsystem;
   private final MagicPositionSensor positionSensor;
 
-  // Where are we going? (4.0, 4.0)! When? REAL SOON!
-  private  final Pose2d target = new Pose2d(new Translation2d(4.0, 4.0), new Rotation2d(0.0));
 
   public AutoDriveCommand(SimulatorDriveSubsystem driveSubsystem, MagicPositionSensor positionSensor) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -37,7 +35,7 @@ public class AutoDriveCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // Get vector to target
+    // Align with the target position
     
 
   }
