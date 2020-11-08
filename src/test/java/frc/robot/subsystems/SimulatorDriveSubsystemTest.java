@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import frc.robot.SimulationState;
-import frc.robot.subsystems.SimulatorDriveSubsystem.SpeedPair;
+import frc.robot.SimulationState.SpeedPair;
 
 public class SimulatorDriveSubsystemTest {
 
@@ -82,7 +82,7 @@ public class SimulatorDriveSubsystemTest {
 
     @Test
     public void testLinearAcceleration() {
-        SpeedPair speedPair = SimulationState.calculateNextVelocity(0.0, 0.0, 2.0, 3.0, 0.0);
+        SimulationState.SpeedPair speedPair = SimulationState.calculateNextVelocity(0.0, 0.0, 2.0, 3.0, 0.0);
         assertEquals(5.8, speedPair.linear); // This is the velocity, plus the acceleration, minus the friction
         assertEquals(0.0, speedPair.rotational);
     }
