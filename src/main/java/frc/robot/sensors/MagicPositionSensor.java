@@ -14,10 +14,12 @@ public class MagicPositionSensor {
         return simulationState.getRobotPosition();
     }
 
-    public Pose2d getRobotVelocity() {
-        return simulationState.getRobotVelocity();
+    public double getRobotLinearSpeed() {
+        return simulationState.getRobotLinearSpeed();
     }
 
-
+    public double getRobotRotationalSpeed() {
+        return simulationState.getRobotRotationalSpeed();
+    }
 
 }

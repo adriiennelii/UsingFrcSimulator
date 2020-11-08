@@ -27,6 +27,16 @@ public class SimulatorDriveSubsystem extends SubsystemBase {
   private double linearAcceleration;
   private double rotationalAcceleration;
 
+  static class SpeedPair {
+    public final double linear;
+    public final double rotational;
+
+    public SpeedPair(double linear, double rotational) {
+      this.linear = linear;
+      this.rotational = rotational;
+    }
+  }
+
   /**
    * Creates a new SimulatorDriveSubsystem.
    */
@@ -55,41 +65,38 @@ public class SimulatorDriveSubsystem extends SubsystemBase {
     Pose2d currentPosition = simulationState.getRobotPosition();
     double intervalSeconds = intervalNanos / ONE_BILLION;
     // Update the position
-    Pose2d currentVelocity = simulationState.getRobotVelocity();
-    Pose2d nextPosition = calculateNextPosition(currentPosition, currentVelocity, intervalSeconds);
+    double currentLinearSpeed = simulationState.getRobotLinearSpeed();
+    double currentRotationalSpeed = simulationState.getRobotRotationalSpeed();
+    Pose2d nextPosition = calculateNextPosition(currentPosition, currentLinearSpeed, currentRotationalSpeed, intervalSeconds);
     simulationState.setPosition(nextPosition);
-    Pose2d nextVelocity = calculateNextVelocity(currentPosition.getRotation(), currentVelocity, intervalSeconds, linearAcceleration, rotationalAcceleration);
-    simulationState.setVelocity(nextVelocity);
+    SpeedPair nextVelocity = calculateNextVelocity(currentLinearSpeed, currentRotationalSpeed, intervalSeconds, linearAcceleration, rotationalAcceleration);
+    simulationState.setRobotLinearSpeed(nextVelocity.linear);
+    simulationState.setRobotRotationalSpeed(nextVelocity.rotational);
   }
 
-  static Pose2d calculateNextPosition(Pose2d currentPosition, Pose2d currentVelocity, double intervalSeconds) {
-    Translation2d nextTranslation = currentPosition.getTranslation().plus(currentVelocity.getTranslation().times(intervalSeconds));
-    Rotation2d nextRotation = currentPosition.getRotation().plus(currentVelocity.getRotation().times(intervalSeconds));
+  static Pose2d calculateNextPosition(Pose2d currentPosition, double linearSpeed, double rotationalSpeed, double intervalSeconds) {
+    Translation2d currentVelocity = new Translation2d(linearSpeed, 0.0).rotateBy(currentPosition.getRotation());
+    Translation2d nextTranslation = currentPosition.getTranslation().plus(currentVelocity.times(intervalSeconds));
+    Rotation2d nextRotation = currentPosition.getRotation().plus(new Rotation2d(rotationalSpeed * intervalSeconds));
     return new Pose2d(nextTranslation, nextRotation);
   }
 
-  static Pose2d calculateNextVelocity(Rotation2d currentRotation, Pose2d currentVelocity, double intervalSeconds, double linearAcceleration, double rotationalAcceleration) {
-    // Calculate the acceleration
-    Translation2d linearAccelerationVector = new Translation2d(linearAcceleration, 0.0).rotateBy(currentRotation);
-    Translation2d frictionAccelerationVector = new Translation2d(LINEAR_FRICTION_COEFFICIENT, 0.0).rotateBy(currentRotation);
-    // Update the velocity
-    Translation2d nextTranslationVelocity = currentVelocity.getTranslation().plus(linearAccelerationVector.times(intervalSeconds));
-    if (nextTranslationVelocity.getNorm() > frictionAccelerationVector.getNorm()) {
-      nextTranslationVelocity = nextTranslationVelocity.minus(frictionAccelerationVector);
+  static SpeedPair calculateNextVelocity(double currentLinearSpeed, double currentRotationalSpeed, double intervalSeconds, double linearAcceleration, double rotationalAcceleration) {
+    double nextLinearSpeed = currentLinearSpeed + linearAcceleration * intervalSeconds;
+    double linearFriction = LINEAR_FRICTION_COEFFICIENT * intervalSeconds * Math.signum(nextLinearSpeed);
+    if (Math.abs(nextLinearSpeed) < Math.abs(linearFriction)) {
+      nextLinearSpeed = 0.0;
     } else {
-      nextTranslationVelocity = new Translation2d(); // zero
+      nextLinearSpeed -= linearFriction;
     }
-
-    Rotation2d nextRotationalVelocity = currentVelocity.getRotation().plus(new Rotation2d(rotationalAcceleration * intervalSeconds));
-    if (Math.abs(nextRotationalVelocity.getRadians()) < ROTATIONAL_FRICTION_COEFFICIENT) {
-      nextRotationalVelocity = new Rotation2d(); //zero
+    double nextRotationalSpeed = currentRotationalSpeed + rotationalAcceleration * intervalSeconds;
+    double rotationalFriction = ROTATIONAL_FRICTION_COEFFICIENT * intervalSeconds * Math.signum(nextRotationalSpeed);
+    if (Math.abs(nextRotationalSpeed) < Math.abs(rotationalFriction)) {
+      nextRotationalSpeed = 0.0;
     } else {
-      double directedRotationalFriction = Math.signum(nextRotationalVelocity.getRadians()) * ROTATIONAL_FRICTION_COEFFICIENT;
-      nextRotationalVelocity = nextRotationalVelocity.minus(new Rotation2d(directedRotationalFriction));
+      nextRotationalSpeed -= rotationalFriction;
     }
-
-    return new Pose2d(nextTranslationVelocity, nextRotationalVelocity);
-
+    return new SpeedPair(nextLinearSpeed, nextRotationalSpeed);
   }
 
 }
