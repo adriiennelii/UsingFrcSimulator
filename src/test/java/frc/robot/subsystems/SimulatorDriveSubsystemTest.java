@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
+import frc.robot.subsystems.SimulatorDriveSubsystem.SpeedPair;
 
 public class SimulatorDriveSubsystemTest {
 
@@ -77,4 +78,12 @@ public class SimulatorDriveSubsystemTest {
         assertEquals(0.0, position.getTranslation().getX(), 0.001);
         assertEquals(0.0, position.getTranslation().getY(), 0.001);
     }
+
+    @Test
+    public void testLinearAcceleration() {
+        SpeedPair speedPair = SimulatorDriveSubsystem.calculateNextVelocity(0.0, 0.0, 2.0, 3.0, 0.0);
+        assertEquals(5.8, speedPair.linear); // This is the velocity, plus the acceleration, minus the friction
+        assertEquals(0.0, speedPair.rotational);
+    }
+
 }

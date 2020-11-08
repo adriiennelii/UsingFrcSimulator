@@ -18,9 +18,9 @@ import frc.robot.SimulationState;
 
 public class SimulatorDriveSubsystem extends SubsystemBase {
   private static final Logger logger = LogManager.getLogger(SimulatorDriveSubsystem.class);
-  private static final double ONE_BILLION = 1000000000.0;
-  private static final double LINEAR_FRICTION_COEFFICIENT = 0.1;
-  private static final double ROTATIONAL_FRICTION_COEFFICIENT = 0.1;
+  public static final double ONE_BILLION = 1000000000.0;
+  public static final double LINEAR_FRICTION_COEFFICIENT = 0.1;
+  public static final double ROTATIONAL_FRICTION_COEFFICIENT = 0.1;
   private final SimulationState simulationState;
   private long lastNanos = System.nanoTime();
 
@@ -74,14 +74,14 @@ public class SimulatorDriveSubsystem extends SubsystemBase {
     simulationState.setRobotRotationalSpeed(nextVelocity.rotational);
   }
 
-  static Pose2d calculateNextPosition(Pose2d currentPosition, double linearSpeed, double rotationalSpeed, double intervalSeconds) {
+  public static Pose2d calculateNextPosition(Pose2d currentPosition, double linearSpeed, double rotationalSpeed, double intervalSeconds) {
     Translation2d currentVelocity = new Translation2d(linearSpeed, 0.0).rotateBy(currentPosition.getRotation());
     Translation2d nextTranslation = currentPosition.getTranslation().plus(currentVelocity.times(intervalSeconds));
     Rotation2d nextRotation = currentPosition.getRotation().plus(new Rotation2d(rotationalSpeed * intervalSeconds));
     return new Pose2d(nextTranslation, nextRotation);
   }
 
-  static SpeedPair calculateNextVelocity(double currentLinearSpeed, double currentRotationalSpeed, double intervalSeconds, double linearAcceleration, double rotationalAcceleration) {
+  public static SpeedPair calculateNextVelocity(double currentLinearSpeed, double currentRotationalSpeed, double intervalSeconds, double linearAcceleration, double rotationalAcceleration) {
     double nextLinearSpeed = currentLinearSpeed + linearAcceleration * intervalSeconds;
     double linearFriction = LINEAR_FRICTION_COEFFICIENT * intervalSeconds * Math.signum(nextLinearSpeed);
     if (Math.abs(nextLinearSpeed) < Math.abs(linearFriction)) {
