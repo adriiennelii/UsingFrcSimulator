@@ -19,6 +19,8 @@ import frc.robot.SimulationState;
 public class SimulatorDriveSubsystem extends SubsystemBase {
   private static final Logger logger = LogManager.getLogger(SimulatorDriveSubsystem.class);
   private static final double ONE_BILLION = 1000000000.0;
+  private static final double LINEAR_FRICTION_COEFFICIENT = 0.1;
+  private static final double ROTATIONAL_FRICTION_COEFFICIENT = 0.1;
   private final SimulationState simulationState;
   private long lastNanos = System.nanoTime();
 
@@ -54,6 +56,7 @@ public class SimulatorDriveSubsystem extends SubsystemBase {
     double intervalSeconds = intervalNanos / ONE_BILLION;
     // Calculate the acceleration
     Translation2d linearAccelerationVector = new Translation2d(linearAcceleration, 0.0).rotateBy(pose.getRotation());
+    Translation2d frictionAccelerationVector = new Translation2d(LINEAR_FRICTION_COEFFICIENT, 0.0).rotateBy(pose.getRotation());
 
     // Update the position
     Pose2d velocity = simulationState.getRobotVelocity();
@@ -62,7 +65,20 @@ public class SimulatorDriveSubsystem extends SubsystemBase {
     simulationState.setPosition(new Pose2d(nextTranslation, nextRotation));
     // Update the velocity
     Translation2d nextTranslationVelocity = velocity.getTranslation().plus(linearAccelerationVector.times(intervalSeconds));
+    if (nextTranslationVelocity.getNorm() > frictionAccelerationVector.getNorm()) {
+      nextTranslationVelocity = nextTranslationVelocity.minus(frictionAccelerationVector);
+    } else {
+      nextTranslationVelocity = new Translation2d(); // zero
+    }
+
     Rotation2d nextRotationalVelocity = velocity.getRotation().plus(new Rotation2d(rotationalAcceleration * intervalSeconds));
+    if (Math.abs(nextRotationalVelocity.getRadians()) < ROTATIONAL_FRICTION_COEFFICIENT) {
+      nextRotationalVelocity = new Rotation2d(); //zero
+    } else {
+      double directedRotationalFriction = Math.signum(nextRotationalVelocity.getRadians()) * ROTATIONAL_FRICTION_COEFFICIENT;
+      nextRotationalVelocity = nextRotationalVelocity.minus(new Rotation2d(directedRotationalFriction));
+    }
+
     simulationState.setVelocity(new Pose2d(nextTranslationVelocity, nextRotationalVelocity));
     //logger.error("interval: "+intervalSeconds + " accel: "+fmtTranslation(linearAccelerationVector) + " vel: "+fmtTranslation(nextTranslationVelocity));
   }
