@@ -9,6 +9,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.AutoDriveCommand;
 import frc.robot.subsystems.SimulatorDriveSubsystem;
 
 /**
@@ -21,6 +22,7 @@ public class Robot extends TimedRobot {
 
 
   private final SimulatorDriveSubsystem driveSubsystem = new SimulatorDriveSubsystem();
+  private final AutoDriveCommand autoDriveCommand = new AutoDriveCommand(driveSubsystem);
 
   public Robot() {
     super(0.01); // Let's use a 10ms iteration time
@@ -32,6 +34,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    driveSubsystem.reset();
   }
 
   /**
@@ -55,6 +58,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+    driveSubsystem.reset();
   }
 
   @Override
@@ -66,6 +70,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    driveSubsystem.reset();
+    CommandScheduler.getInstance().schedule(autoDriveCommand);
   }
 
   /**
@@ -77,7 +83,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-
+    driveSubsystem.reset();
   }
 
   /**
@@ -91,6 +97,7 @@ public class Robot extends TimedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
+    driveSubsystem.reset();
   }
 
   /**

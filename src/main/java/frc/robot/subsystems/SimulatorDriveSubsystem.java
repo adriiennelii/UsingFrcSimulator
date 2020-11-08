@@ -35,7 +35,15 @@ public class SimulatorDriveSubsystem extends SubsystemBase {
     rotationalAcceleration = 0.0;    
   }
 
+  public void setAcceleration(double linearAcceleration, double rotationalAcceleration) {
+    this.linearAcceleration = linearAcceleration;
+    this.rotationalAcceleration = rotationalAcceleration;
+  }
 
+  public void reset() {
+    linearAcceleration = 0.0;
+    rotationalAcceleration = 0.0;
+  }
 
   @Override
   public void periodic() {
@@ -56,7 +64,7 @@ public class SimulatorDriveSubsystem extends SubsystemBase {
     Translation2d nextTranslationVelocity = velocity.getTranslation().plus(linearAccelerationVector.times(intervalSeconds));
     Rotation2d nextRotationalVelocity = velocity.getRotation().plus(new Rotation2d(rotationalAcceleration * intervalSeconds));
     velocity = new Pose2d(nextTranslationVelocity, nextRotationalVelocity);
-    logger.error("interval: "+intervalSeconds + " accel: "+fmtTranslation(linearAccelerationVector) + " vel: "+fmtTranslation(nextTranslationVelocity));
+    //logger.error("interval: "+intervalSeconds + " accel: "+fmtTranslation(linearAccelerationVector) + " vel: "+fmtTranslation(nextTranslationVelocity));
   }
 
 
