@@ -15,10 +15,12 @@ import frc.robot.util.AccelerationState;
 import frc.robot.util.Field2d;
 
 import java.util.function.Supplier;
+
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class SimulatorDriveSubsystem extends SubsystemBase {
-  private static final Logger logger;
+  private static final Logger logger = LogManager.getLogger(SimulatorDriveSubsystem.class);
   private static final double ONE_BILLION = 1000000000.0;
   private final Supplier<AccelerationState> controlSupplier;
   private final Field2d field2d = new Field2d();
@@ -35,7 +37,10 @@ public class SimulatorDriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    long intervalNanos = System.nanoTime() - lastNanos;
+    long now = System.nanoTime();
+    long intervalNanos = now - lastNanos;
+    lastNanos = now;
+
     AccelerationState state = controlSupplier.get();
     Pose2d pose = field2d.getRobotPose();
     double intervalSeconds = intervalNanos / ONE_BILLION;
@@ -50,6 +55,11 @@ public class SimulatorDriveSubsystem extends SubsystemBase {
     Translation2d nextTranslationVelocity = velocity.getTranslation().plus(linearAccelerationVector.times(intervalSeconds));
     Rotation2d nextRotationalVelocity = velocity.getRotation().plus(new Rotation2d(state.rotationalAcceleration * intervalSeconds));
     velocity = new Pose2d(nextTranslationVelocity, nextRotationalVelocity);
+    logger.error("interval: "+intervalSeconds + " accel: "+fmtTranslation(linearAccelerationVector) + " vel: "+fmtTranslation(nextTranslationVelocity));
+  }
 
+
+  private String fmtTranslation(Translation2d trans) {
+    return "("+trans.getX()+", "+trans.getY()+")";
   }
 }

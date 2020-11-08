@@ -21,7 +21,7 @@ import frc.robot.util.AccelerationState;
 public class Robot extends TimedRobot {
 
 
-  private final SimulatorDriveSubsystem driveSubsystem = new SimulatorDriveSubsystem(() -> new AccelerationState(0.0, 0.0));
+  private final SimulatorDriveSubsystem driveSubsystem = new SimulatorDriveSubsystem(() -> new AccelerationState(0.01, 0.0));
 
   public Robot() {
     super(0.01); // Let's use a 10ms iteration time
