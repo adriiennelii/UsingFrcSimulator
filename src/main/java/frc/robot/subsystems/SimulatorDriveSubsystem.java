@@ -54,15 +54,20 @@ public class SimulatorDriveSubsystem extends SubsystemBase {
 
     Pose2d pose = simulationState.getRobotPosition();
     double intervalSeconds = intervalNanos / ONE_BILLION;
-    // Calculate the acceleration
-    Translation2d linearAccelerationVector = new Translation2d(linearAcceleration, 0.0).rotateBy(pose.getRotation());
-    Translation2d frictionAccelerationVector = new Translation2d(LINEAR_FRICTION_COEFFICIENT, 0.0).rotateBy(pose.getRotation());
-
     // Update the position
     Pose2d velocity = simulationState.getRobotVelocity();
     Translation2d nextTranslation = pose.getTranslation().plus(velocity.getTranslation().times(intervalSeconds));
     Rotation2d nextRotation = pose.getRotation().plus(velocity.getRotation().times(intervalSeconds));
     simulationState.setPosition(new Pose2d(nextTranslation, nextRotation));
+    Pose2d nextVelocity = calculateNextVelocity(velocity, intervalSeconds, linearAcceleration, rotationalAcceleration);
+    simulationState.setVelocity(nextVelocity);
+  }
+
+
+  static Pose2d calculateNextVelocity(Pose2d velocity, double intervalSeconds, double linearAcceleration, double rotationalAcceleration) {
+    // Calculate the acceleration
+    Translation2d linearAccelerationVector = new Translation2d(linearAcceleration, 0.0).rotateBy(pose.getRotation());
+    Translation2d frictionAccelerationVector = new Translation2d(LINEAR_FRICTION_COEFFICIENT, 0.0).rotateBy(pose.getRotation());
     // Update the velocity
     Translation2d nextTranslationVelocity = velocity.getTranslation().plus(linearAccelerationVector.times(intervalSeconds));
     if (nextTranslationVelocity.getNorm() > frictionAccelerationVector.getNorm()) {
@@ -79,12 +84,8 @@ public class SimulatorDriveSubsystem extends SubsystemBase {
       nextRotationalVelocity = nextRotationalVelocity.minus(new Rotation2d(directedRotationalFriction));
     }
 
-    simulationState.setVelocity(new Pose2d(nextTranslationVelocity, nextRotationalVelocity));
-    //logger.error("interval: "+intervalSeconds + " accel: "+fmtTranslation(linearAccelerationVector) + " vel: "+fmtTranslation(nextTranslationVelocity));
+    return new Pose2d(nextTranslationVelocity, nextRotationalVelocity);
+
   }
 
-
-  private String fmtTranslation(Translation2d trans) {
-    return "("+trans.getX()+", "+trans.getY()+")";
-  }
 }
