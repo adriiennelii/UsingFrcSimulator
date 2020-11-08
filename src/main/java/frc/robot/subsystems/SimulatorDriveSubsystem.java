@@ -59,15 +59,15 @@ public class SimulatorDriveSubsystem extends SubsystemBase {
     Translation2d nextTranslation = pose.getTranslation().plus(velocity.getTranslation().times(intervalSeconds));
     Rotation2d nextRotation = pose.getRotation().plus(velocity.getRotation().times(intervalSeconds));
     simulationState.setPosition(new Pose2d(nextTranslation, nextRotation));
-    Pose2d nextVelocity = calculateNextVelocity(velocity, intervalSeconds, linearAcceleration, rotationalAcceleration);
+    Pose2d nextVelocity = calculateNextVelocity(pose.getRotation(), velocity, intervalSeconds, linearAcceleration, rotationalAcceleration);
     simulationState.setVelocity(nextVelocity);
   }
 
 
-  static Pose2d calculateNextVelocity(Pose2d velocity, double intervalSeconds, double linearAcceleration, double rotationalAcceleration) {
+  static Pose2d calculateNextVelocity(Rotation2d currentRotation, Pose2d velocity, double intervalSeconds, double linearAcceleration, double rotationalAcceleration) {
     // Calculate the acceleration
-    Translation2d linearAccelerationVector = new Translation2d(linearAcceleration, 0.0).rotateBy(pose.getRotation());
-    Translation2d frictionAccelerationVector = new Translation2d(LINEAR_FRICTION_COEFFICIENT, 0.0).rotateBy(pose.getRotation());
+    Translation2d linearAccelerationVector = new Translation2d(linearAcceleration, 0.0).rotateBy(currentRotation);
+    Translation2d frictionAccelerationVector = new Translation2d(LINEAR_FRICTION_COEFFICIENT, 0.0).rotateBy(currentRotation);
     // Update the velocity
     Translation2d nextTranslationVelocity = velocity.getTranslation().plus(linearAccelerationVector.times(intervalSeconds));
     if (nextTranslationVelocity.getNorm() > frictionAccelerationVector.getNorm()) {
