@@ -10,6 +10,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.AutoDriveCommand;
+import frc.robot.sensors.MagicPositionSensor;
 import frc.robot.subsystems.SimulatorDriveSubsystem;
 
 /**
@@ -20,9 +21,10 @@ import frc.robot.subsystems.SimulatorDriveSubsystem;
  */
 public class Robot extends TimedRobot {
 
-
-  private final SimulatorDriveSubsystem driveSubsystem = new SimulatorDriveSubsystem();
-  private final AutoDriveCommand autoDriveCommand = new AutoDriveCommand(driveSubsystem);
+  private final SimulationState simulationState = new SimulationState();
+  private final MagicPositionSensor positionSensor = new MagicPositionSensor(simulationState);
+  private final SimulatorDriveSubsystem driveSubsystem = new SimulatorDriveSubsystem(simulationState);
+  private final AutoDriveCommand autoDriveCommand = new AutoDriveCommand(driveSubsystem, positionSensor);
 
   public Robot() {
     super(0.01); // Let's use a 10ms iteration time

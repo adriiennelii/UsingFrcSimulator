@@ -1,17 +1,23 @@
 package frc.robot.sensors;
 
 import edu.wpi.first.wpilibj.geometry.Pose2d;
-import frc.robot.util.Field2d;
+import frc.robot.SimulationState;
 
 public class MagicPositionSensor {
-    private final Field2d field2d;
+    private final SimulationState simulationState;
     
-    public MagicPositionSensor(Field2d field2d) {
-        this.field2d = field2d;
+    public MagicPositionSensor(SimulationState simulationState) {
+        this.simulationState = simulationState;
     }
 
     public Pose2d getRobotPosition() {
-        return field2d.getRobotPose();
+        return simulationState.getRobotPosition();
     }
+
+    public Pose2d getRobotVelocity() {
+        return simulationState.getRobotVelocity();
+    }
+
+
 
 }
