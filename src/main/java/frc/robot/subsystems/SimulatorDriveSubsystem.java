@@ -52,13 +52,13 @@ public class SimulatorDriveSubsystem extends SubsystemBase {
     long intervalNanos = now - lastNanos;
     lastNanos = now;
 
-    Pose2d pose = simulationState.getRobotPosition();
+    Pose2d currentPosition = simulationState.getRobotPosition();
     double intervalSeconds = intervalNanos / ONE_BILLION;
     // Update the position
-    Pose2d velocity = simulationState.getRobotVelocity();
-    Pose2d nextPosition = calculateNextPosition(pose, velocity, intervalSeconds);
+    Pose2d currentVelocity = simulationState.getRobotVelocity();
+    Pose2d nextPosition = calculateNextPosition(currentPosition, currentVelocity, intervalSeconds);
     simulationState.setPosition(nextPosition);
-    Pose2d nextVelocity = calculateNextVelocity(pose.getRotation(), velocity, intervalSeconds, linearAcceleration, rotationalAcceleration);
+    Pose2d nextVelocity = calculateNextVelocity(currentPosition.getRotation(), currentVelocity, intervalSeconds, linearAcceleration, rotationalAcceleration);
     simulationState.setVelocity(nextVelocity);
   }
 
