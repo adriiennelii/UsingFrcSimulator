@@ -10,6 +10,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.SimulatorDriveSubsystem;
+import frc.robot.util.AccelerationState;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -19,7 +20,8 @@ import frc.robot.subsystems.SimulatorDriveSubsystem;
  */
 public class Robot extends TimedRobot {
 
-  private final SimulatorDriveSubsystem driveSubsystem = new SimulatorDriveSubsystem(null);
+
+  private final SimulatorDriveSubsystem driveSubsystem = new SimulatorDriveSubsystem(() -> new AccelerationState(0.0, 0.0));
 
   public Robot() {
     super(0.01); // Let's use a 10ms iteration time

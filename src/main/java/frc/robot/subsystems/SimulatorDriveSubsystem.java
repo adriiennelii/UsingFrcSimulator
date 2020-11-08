@@ -15,8 +15,10 @@ import frc.robot.util.AccelerationState;
 import frc.robot.util.Field2d;
 
 import java.util.function.Supplier;
+import org.apache.logging.log4j.Logger;
 
 public class SimulatorDriveSubsystem extends SubsystemBase {
+  private static final Logger logger;
   private static final double ONE_BILLION = 1000000000.0;
   private final Supplier<AccelerationState> controlSupplier;
   private final Field2d field2d = new Field2d();
@@ -27,10 +29,9 @@ public class SimulatorDriveSubsystem extends SubsystemBase {
    */
   public SimulatorDriveSubsystem(Supplier<AccelerationState> controlSupplier) {
     this.controlSupplier = controlSupplier;
-    velocity = new Pose2d(new Translation2d(0.001, 0.0), new Rotation2d(0.001));
+    velocity = new Pose2d(new Translation2d(), new Rotation2d());
     
   }
-
 
   @Override
   public void periodic() {
