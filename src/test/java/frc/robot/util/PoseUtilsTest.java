@@ -35,4 +35,34 @@ public class PoseUtilsTest {
         Rotation2d heading = PoseUtils.getHeading(current, target);
         assertEquals(0.0, heading.getRadians());
     }
+
+    @Test
+    public void testDirectionBackward() {
+        Pose2d current = new Pose2d(new Translation2d(0.0, 0.0), new Rotation2d(0.0));
+        Pose2d target = new Pose2d(new Translation2d(-1.0, 0.0), new Rotation2d(0.0));
+
+        Rotation2d heading = PoseUtils.getHeading(current, target);
+        assertEquals(Math.PI, Math.abs(heading.getRadians()), epsilon);
+    }
+
+    @Test
+    public void testTurnLeft45Degrees() {
+        Pose2d current = new Pose2d(new Translation2d(0.0, 0.0), new Rotation2d(0.0));
+        Pose2d target = new Pose2d(new Translation2d(1.0, 1.0), new Rotation2d(0.0));
+
+        Rotation2d heading = PoseUtils.getHeading(current, target);
+        assertEquals(-45.0,heading.getDegrees(), epsilon);
+
+    }
+
+    @Test
+    public void testTurnRight45Degrees() {
+        Pose2d current = new Pose2d(new Translation2d(0.0, 0.0), new Rotation2d(0.0));
+        Pose2d target = new Pose2d(new Translation2d(1.0, -1.0), new Rotation2d(0.0));
+
+        Rotation2d heading = PoseUtils.getHeading(current, target);
+        assertEquals(45.0, heading.getDegrees(), epsilon);
+
+    }
+
 }
