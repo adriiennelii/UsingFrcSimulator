@@ -20,6 +20,8 @@ public class AutoDriveCommand extends CommandBase {
   private static final double DISTANCE_CLOSE_ENOUGH = 0.1;
   private static final double HEADING_CLOSE_ENOUGH = 1.0;
 
+  private static final double kP = 0.1;
+
   public AutoDriveCommand(SimulatorDriveSubsystem driveSubsystem, MagicPositionSensor positionSensor, MagicTargetSensor targetSensor) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.driveSubsystem = driveSubsystem;
@@ -50,8 +52,9 @@ public class AutoDriveCommand extends CommandBase {
       isDone = true;
     } else if (Math.abs(heading) < HEADING_CLOSE_ENOUGH) {
       // drive towards the target!
+      driveSubsystem.setAcceleration(kP * distance, 0.0);
     } else {
-      // turn towards the target
+      driveSubsystem.setAcceleration(0.0, kP * heading);
     }
 
   }
