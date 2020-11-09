@@ -9,6 +9,7 @@ public class SimulationState {
 	private static final double MAX_ACCEL = 3.0; // That's pretty good accel!
 	private static final double MAX_SPEED = 10.0; // m/s: really fast!
 	private static final double MAX_ROTATIONAL_SPEED = 2.0 * Math.PI; // seems pretty fast!
+	private static final double MAX_ROTATIONAL_ACCEL = 1.0;
 
     private final Translation2d target = new Translation2d(8.0, 4.0);
 
@@ -25,10 +26,12 @@ public class SimulationState {
 	private static final Field2d field2d = new Field2d();
     private double robotLinearSpeed;
     private double robotRotationalSpeed;
-    public long lastNanos;
-	public static final double ROTATIONAL_FRICTION_COEFFICIENT = 0.1;
-	public static final double LINEAR_FRICTION_COEFFICIENT = 0.1;
-	public static final double ONE_BILLION = 1000000000.0;
+    private long lastNanos;
+	private static final double ROTATIONAL_FRICTION_COEFFICIENT = 0.1;
+	private static final double LINEAR_FRICTION_COEFFICIENT = 0.1;
+	private static final double ONE_BILLION = 1000000000.0;
+
+
 
 
     public SimulationState() {
@@ -94,6 +97,8 @@ public class SimulationState {
 	  }
 
 	public static SimulationState.SpeedPair calculateNextVelocity(double currentLinearSpeed, double currentRotationalSpeed, double intervalSeconds, double linearAcceleration, double rotationalAcceleration) {
+		linearAcceleration = clamp(linearAcceleration, -MAX_ACCEL, MAX_ACCEL);
+		rotationalAcceleration = clamp(rotationalAcceleration, -MAX_ROTATIONAL_ACCEL, MAX_ROTATIONAL_ACCEL);
 	    double nextLinearSpeed = currentLinearSpeed + linearAcceleration * intervalSeconds;
 	    double linearFriction = SimulationState.LINEAR_FRICTION_COEFFICIENT * intervalSeconds * Math.signum(nextLinearSpeed);
 	    if (Math.abs(nextLinearSpeed) < Math.abs(linearFriction)) {
