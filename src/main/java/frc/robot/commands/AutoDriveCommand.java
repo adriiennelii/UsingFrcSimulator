@@ -21,13 +21,6 @@ public class AutoDriveCommand extends CommandBase {
   private final MagicPositionSensor positionSensor;
   private final MagicTargetSensor targetSensor;
   private boolean isDone = false;
-  private static final double DISTANCE_CLOSE_ENOUGH = 0.1;
-  private static final double HEADING_CLOSE_ENOUGH = 1.0;
-
-  private static final double kP_linear = 0.15;
-  private static final double kD_linear = 0.4;
-  private static final double kP_rotational = 0.2;
-  private static final double kD_rotational = 1.9;
 
   public AutoDriveCommand(SimulatorDriveSubsystem driveSubsystem, MagicPositionSensor positionSensor, MagicTargetSensor targetSensor) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -48,29 +41,32 @@ public class AutoDriveCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double distance = targetSensor.getDistanceToTarget();
-    double heading = targetSensor.getHeadingToTarget();
-    double speed = positionSensor.getRobotLinearSpeed();
-    double rotationSpeed = positionSensor.getRobotRotationalSpeed();
-    // Align with the target position
+    double distanceToTarget = targetSensor.getDistanceToTarget();
+    double headingToTarget = targetSensor.getHeadingToTarget();
+    double robotLinearSpeed = positionSensor.getRobotLinearSpeed();
+    double robotRotationSpeed = positionSensor.getRobotRotationalSpeed();
 
-    if (distance < DISTANCE_CLOSE_ENOUGH) {
-      // Made it!      
-      isDone = true;
-    } else if (Math.abs(heading) < HEADING_CLOSE_ENOUGH) {
-      // drive towards the target!
-      driveSubsystem.setAcceleration(kP_linear * distance - kD_linear * speed, 0.0);
-    } else {
-      driveSubsystem.setAcceleration(0.0, kP_rotational * heading - kD_rotational * rotationSpeed);
-    }
+    // TODO: Make the robot navigate to the field position X=8.0, Y=4.0
+    //
+    // The robot should stop within 1 meter of this location.
+    //
+    //Decide what the robot should do, based on the information from the sensors (above).
+    // Should the robot turn? Should it drive forwards or backwards? Should it put on the brakes?
+    // 
+    // To accelerate forward at 1 m/s^2:   driveSubsystem.setAcceleration(1.0, 0.0);
+    // To accelerate backward at 1 m/s^2:  driveSubsystem.setAcceleration(-1.0, 0.0);
+    // To accelerate rotating left at 1 radian/s^2:       driveSubsystem.setAcceleration(0.0, 1.0);
+    // To accelerate rotating right at 2 radians/s^2:     driveSubsystem.setAcceleration(0.0, -2.0);
+    // To put on the brakes:     driveSubsystem.setBrakes(true);
+    // To take off the brakes:   driveSubsystem.setBrakes(false);
+    //
+    // When the robot is close enough to the target, set isDone = true
 
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    driveSubsystem.setBrakes(true);
-    driveSubsystem.setAcceleration(0.0, 0.0);
   }
 
   // Returns true when the command should end.
