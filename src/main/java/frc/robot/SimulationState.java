@@ -50,6 +50,10 @@ public class SimulationState {
 		}
 	}
 
+	public void setBraking(boolean isBraking) {
+		this.isBraking = isBraking;
+	}
+
     public SimulationState() {
 		lastNanos = System.nanoTime();
 		reset();
@@ -58,7 +62,8 @@ public class SimulationState {
     public void reset() {
         field2d.setRobotPose(new Pose2d());
         robotLinearSpeed = 0.0;
-        robotRotationalSpeed = 0.0;
+		robotRotationalSpeed = 0.0;
+		isBraking = false;
     }
 
     public Pose2d getRobotPosition() {
@@ -113,18 +118,18 @@ public class SimulationState {
 	    return new Pose2d(nextTranslation, nextRotation);
 	  }
 
-	public static SimulationState.SpeedPair calculateNextVelocity(double currentLinearSpeed, double currentRotationalSpeed, double intervalSeconds, double linearAcceleration, double rotationalAcceleration) {
+	public SimulationState.SpeedPair calculateNextVelocity(double currentLinearSpeed, double currentRotationalSpeed, double intervalSeconds, double linearAcceleration, double rotationalAcceleration) {
 		linearAcceleration = clamp(linearAcceleration, -MAX_ACCEL, MAX_ACCEL);
 		rotationalAcceleration = clamp(rotationalAcceleration, -MAX_ROTATIONAL_ACCEL, MAX_ROTATIONAL_ACCEL);
 	    double nextLinearSpeed = currentLinearSpeed + linearAcceleration * intervalSeconds;
-	    double linearFriction = SimulationState.LINEAR_FRICTION_COEFFICIENT * intervalSeconds * Math.signum(nextLinearSpeed);
+	    double linearFriction = getLinearFriction() * intervalSeconds * Math.signum(nextLinearSpeed);
 	    if (Math.abs(nextLinearSpeed) < Math.abs(linearFriction)) {
 	      nextLinearSpeed = 0.0;
 	    } else {
 	      nextLinearSpeed -= linearFriction;
 	    }
 	    double nextRotationalSpeed = currentRotationalSpeed + rotationalAcceleration * intervalSeconds;
-	    double rotationalFriction = SimulationState.ROTATIONAL_FRICTION_COEFFICIENT * intervalSeconds * Math.signum(nextRotationalSpeed);
+	    double rotationalFriction = getRotationalFriction() * intervalSeconds * Math.signum(nextRotationalSpeed);
 	    if (Math.abs(nextRotationalSpeed) < Math.abs(rotationalFriction)) {
 	      nextRotationalSpeed = 0.0;
 	    } else {
