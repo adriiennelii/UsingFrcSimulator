@@ -20,7 +20,9 @@ public class AutoDriveCommand extends CommandBase {
   private static final double DISTANCE_CLOSE_ENOUGH = 0.1;
   private static final double HEADING_CLOSE_ENOUGH = 1.0;
 
-  private static final double kP = 0.1;
+  private static final double kP_linear = 0.1;
+  private static final double kP_rotational = 0.1;
+  private static final double kD_rotational = 0.4;
 
   public AutoDriveCommand(SimulatorDriveSubsystem driveSubsystem, MagicPositionSensor positionSensor, MagicTargetSensor targetSensor) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -52,9 +54,9 @@ public class AutoDriveCommand extends CommandBase {
       isDone = true;
     } else if (Math.abs(heading) < HEADING_CLOSE_ENOUGH) {
       // drive towards the target!
-      driveSubsystem.setAcceleration(kP * distance, 0.0);
+      driveSubsystem.setAcceleration(kP_linear * distance, 0.0);
     } else {
-      driveSubsystem.setAcceleration(0.0, kP * heading);
+      driveSubsystem.setAcceleration(0.0, kP_rotational * heading - kD_rotational * rotationSpeed);
     }
 
   }
