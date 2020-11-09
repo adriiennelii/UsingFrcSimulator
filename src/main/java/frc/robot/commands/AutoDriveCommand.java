@@ -7,36 +7,52 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.sensors.MagicPositionSensor;
+import frc.robot.sensors.MagicTargetSensor;
 import frc.robot.subsystems.SimulatorDriveSubsystem;
 
 public class AutoDriveCommand extends CommandBase {
   private final SimulatorDriveSubsystem driveSubsystem;
   private final MagicPositionSensor positionSensor;
+  private final MagicTargetSensor targetSensor;
+  private boolean isDone = false;
+  private static final double DISTANCE_CLOSE_ENOUGH = 0.1;
+  private static final double HEADING_CLOSE_ENOUGH = 1.0;
 
-
-  public AutoDriveCommand(SimulatorDriveSubsystem driveSubsystem, MagicPositionSensor positionSensor) {
+  public AutoDriveCommand(SimulatorDriveSubsystem driveSubsystem, MagicPositionSensor positionSensor, MagicTargetSensor targetSensor) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.driveSubsystem = driveSubsystem;
     this.positionSensor = positionSensor;
+    this.targetSensor = targetSensor;
     addRequirements(driveSubsystem);
   }
+
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     driveSubsystem.reset();
+    isDone = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    double distance = targetSensor.getDistanceToTarget();
+    double heading = targetSensor.getHeadingToTarget();
+    double speed = positionSensor.getRobotLinearSpeed();
+    double rotationSpeed = positionSensor.getRobotRotationalSpeed();
     // Align with the target position
-    
+
+    if (distance < DISTANCE_CLOSE_ENOUGH) {
+      // Made it!
+      isDone = true;
+    } else if (Math.abs(heading) < HEADING_CLOSE_ENOUGH) {
+      // drive towards the target!
+    } else {
+      // turn towards the target
+    }
 
   }
 
@@ -49,6 +65,6 @@ public class AutoDriveCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return isDone;
   }
 }

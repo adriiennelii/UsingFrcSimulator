@@ -6,6 +6,9 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
 import frc.robot.util.Field2d;
 
 public class SimulationState {
+	private static final double MAX_ACCEL = 3.0; // That's pretty good accel!
+	private static final double MAX_SPEED = 10.0; // m/s: really fast!
+	private static final double MAX_ROTATIONAL_SPEED = 2.0 * Math.PI; // 60 RPM seems pretty fast!
 
     // Where are we going? (4.0, 4.0)! When? REAL SOON!
     private final Translation2d target = new Translation2d(4.0, 4.0);
@@ -80,8 +83,8 @@ public class SimulationState {
 	    Pose2d nextPosition = calculateNextPosition(currentPosition, currentLinearSpeed, currentRotationalSpeed, intervalSeconds);
 	    simulationState.setRobotPosition(nextPosition);
 	    SimulationState.SpeedPair nextVelocity = calculateNextVelocity(currentLinearSpeed, currentRotationalSpeed, intervalSeconds, linearAcceleration, rotationalAcceleration);
-	    simulationState.setRobotLinearSpeed(nextVelocity.linear);
-	    simulationState.setRobotRotationalSpeed(nextVelocity.rotational);
+	    simulationState.setRobotLinearSpeed(clamp(nextVelocity.linear, -MAX_SPEED, MAX_SPEED));
+	    simulationState.setRobotRotationalSpeed(clamp(nextVelocity.rotational, -MAX_ROTATIONAL_SPEED, MAX_ROTATIONAL_SPEED));
 	  }
 
 	public static Pose2d calculateNextPosition(Pose2d currentPosition, double linearSpeed, double rotationalSpeed, double intervalSeconds) {
@@ -108,5 +111,18 @@ public class SimulationState {
 	    }
 	    return new SimulationState.SpeedPair(nextLinearSpeed, nextRotationalSpeed);
 	  }
+
+
+	    // Clamp to value to the rangle [mix,max]
+  public static double clamp(double value, double min, double max) {
+    if (value < min) {
+      return min;
+    } else if (value > max) {
+      return max;
+    } else {
+      return value;
+    }
+  }
+
 
 }
