@@ -22,14 +22,11 @@ public class AutoDriveCommand extends CommandBase {
   private final MagicTargetSensor targetSensor;
   private boolean isDone = false;
   private static final double DISTANCE_CLOSE_ENOUGH = 0.1;
-  private static final double SPEED_CLOSE_ENOUGH = 0.4;
   private static final double HEADING_CLOSE_ENOUGH = 1.0;
 
   private static final double kP_linear = 0.15;
-  private static final double kI_linear = 0.0;
   private static final double kD_linear = 0.4;
   private static final double kP_rotational = 0.2;
-  private static final double kI_rotational = 0.0;
   private static final double kD_rotational = 1.9;
 
   public AutoDriveCommand(SimulatorDriveSubsystem driveSubsystem, MagicPositionSensor positionSensor, MagicTargetSensor targetSensor) {
