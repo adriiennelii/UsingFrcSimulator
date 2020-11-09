@@ -28,14 +28,31 @@ public class SimulationState {
     private double robotRotationalSpeed;
     private long lastNanos;
 	private static final double ROTATIONAL_FRICTION_COEFFICIENT = 0.1;
+	private static final double BRAKING_ROTATIONAL_FRICTION_COEFFICIENT = 1.0;
 	private static final double LINEAR_FRICTION_COEFFICIENT = 0.1;
+	private static final double BRAKING_LINEAR_FRICTION_COEFFICIENT = 1.0;
 	private static final double ONE_BILLION = 1000000000.0;
+	private boolean isBraking;
 
+	double getLinearFriction() {
+		if (isBraking) {
+			return BRAKING_LINEAR_FRICTION_COEFFICIENT;
+		} else {
+			return LINEAR_FRICTION_COEFFICIENT;
+		}
+	}
 
-
+	double getRotationalFriction() {
+		if (isBraking) {
+			return BRAKING_ROTATIONAL_FRICTION_COEFFICIENT;
+		} else {
+			return ROTATIONAL_FRICTION_COEFFICIENT;
+		}
+	}
 
     public SimulationState() {
-        lastNanos = System.nanoTime();
+		lastNanos = System.nanoTime();
+		reset();
     }
 
     public void reset() {
@@ -72,24 +89,24 @@ public class SimulationState {
         return target;
     }
 
-	public static void updateSimulationState(SimulationState simulationState, double linearAcceleration, double rotationalAcceleration) {
+	public void updateSimulationState(double linearAcceleration, double rotationalAcceleration) {
 	    long now = System.nanoTime();
-	    long intervalNanos = now - simulationState.lastNanos;
-	    simulationState.lastNanos = now;
+	    long intervalNanos = now - lastNanos;
+	    lastNanos = now;
 	
-	    Pose2d currentPosition = simulationState.getRobotPosition();
+	    Pose2d currentPosition = getRobotPosition();
 	    double intervalSeconds = intervalNanos / SimulationState.ONE_BILLION;
 	    // Update the position
-	    double currentLinearSpeed = simulationState.getRobotLinearSpeed();
-	    double currentRotationalSpeed = simulationState.getRobotRotationalSpeed();
+	    double currentLinearSpeed = getRobotLinearSpeed();
+	    double currentRotationalSpeed = getRobotRotationalSpeed();
 	    Pose2d nextPosition = calculateNextPosition(currentPosition, currentLinearSpeed, currentRotationalSpeed, intervalSeconds);
-	    simulationState.setRobotPosition(nextPosition);
-	    SimulationState.SpeedPair nextVelocity = calculateNextVelocity(currentLinearSpeed, currentRotationalSpeed, intervalSeconds, linearAcceleration, rotationalAcceleration);
-	    simulationState.setRobotLinearSpeed(clamp(nextVelocity.linear, -MAX_SPEED, MAX_SPEED));
-	    simulationState.setRobotRotationalSpeed(clamp(nextVelocity.rotational, -MAX_ROTATIONAL_SPEED, MAX_ROTATIONAL_SPEED));
+	    setRobotPosition(nextPosition);
+	    SpeedPair nextVelocity = calculateNextVelocity(currentLinearSpeed, currentRotationalSpeed, intervalSeconds, linearAcceleration, rotationalAcceleration);
+	    setRobotLinearSpeed(clamp(nextVelocity.linear, -MAX_SPEED, MAX_SPEED));
+	    setRobotRotationalSpeed(clamp(nextVelocity.rotational, -MAX_ROTATIONAL_SPEED, MAX_ROTATIONAL_SPEED));
 	  }
 
-	public static Pose2d calculateNextPosition(Pose2d currentPosition, double linearSpeed, double rotationalSpeed, double intervalSeconds) {
+	public Pose2d calculateNextPosition(Pose2d currentPosition, double linearSpeed, double rotationalSpeed, double intervalSeconds) {
 	    Translation2d currentVelocity = new Translation2d(linearSpeed, 0.0).rotateBy(currentPosition.getRotation());
 	    Translation2d nextTranslation = currentPosition.getTranslation().plus(currentVelocity.times(intervalSeconds));
 	    Rotation2d nextRotation = currentPosition.getRotation().plus(new Rotation2d(rotationalSpeed * intervalSeconds));

@@ -22,27 +22,27 @@ public class MagicTargetSensorTest {
     
     @Test
     public void testRightOnTarget() {
-        simulationState.setRobotPosition(new Pose2d(new Translation2d(4.0, 4.0), new Rotation2d(2.0)));
+        simulationState.setRobotPosition(new Pose2d(new Translation2d(8.0, 4.0), new Rotation2d(2.0)));
         assertEquals(0.0, sensor.getDistanceToTarget());
     }
 
     @Test
     public void testItsRightInFrontOfYou() {
         simulationState.setRobotPosition(new Pose2d(new Translation2d(0.0, 4.0), new Rotation2d(0.0)));
-        assertEquals(4.0, sensor.getDistanceToTarget());
+        assertEquals(8.0, sensor.getDistanceToTarget());
         assertEquals(0.0, sensor.getHeadingToTarget());
     }
 
     @Test
     public void testToTheLeftToTheLeftToTheLeft() {
-        simulationState.setRobotPosition(new Pose2d());
+        simulationState.setRobotPosition(new Pose2d(4.0, 0.0, new Rotation2d()));
         assertEquals(45.0, sensor.getHeadingToTarget());
         assertEquals(Math.sqrt(4.0*4.0 + 4.0*4.0), sensor.getDistanceToTarget()); // Pythagorean theorem!
     }
 
     @Test
     public void testToTheRightToTheRightToTheRight() {
-        simulationState.setRobotPosition(new Pose2d(new Translation2d(0.0, 8.0), new Rotation2d(0.0)));
+        simulationState.setRobotPosition(new Pose2d(new Translation2d(4.0, 8.0), new Rotation2d(0.0)));
         assertEquals(-45.0, sensor.getHeadingToTarget());
         assertEquals(Math.sqrt(4.0*4.0 + 4.0*4.0), sensor.getDistanceToTarget()); // Pythagorean theorem!
     }

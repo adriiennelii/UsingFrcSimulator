@@ -36,6 +36,6 @@ public class SimulatorDriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SimulationState.updateSimulationState(simulationState, linearAcceleration, rotationalAcceleration);
+    simulationState.updateSimulationState(linearAcceleration, rotationalAcceleration);
   }
 }
