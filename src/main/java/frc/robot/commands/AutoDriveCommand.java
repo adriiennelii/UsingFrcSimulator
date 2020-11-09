@@ -7,22 +7,30 @@
 
 package frc.robot.commands;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.sensors.MagicPositionSensor;
 import frc.robot.sensors.MagicTargetSensor;
 import frc.robot.subsystems.SimulatorDriveSubsystem;
 
 public class AutoDriveCommand extends CommandBase {
+  private static final Logger logger = LogManager.getLogger(AutoDriveCommand.class);
   private final SimulatorDriveSubsystem driveSubsystem;
   private final MagicPositionSensor positionSensor;
   private final MagicTargetSensor targetSensor;
   private boolean isDone = false;
   private static final double DISTANCE_CLOSE_ENOUGH = 0.1;
+  private static final double SPEED_CLOSE_ENOUGH = 0.4;
   private static final double HEADING_CLOSE_ENOUGH = 1.0;
 
-  private static final double kP_linear = 0.1;
-  private static final double kP_rotational = 0.1;
-  private static final double kD_rotational = 0.4;
+  private static final double kP_linear = 0.2;
+  private static final double kI_linear = 0.0;
+  private static final double kD_linear = 0.2;
+  private static final double kP_rotational = 0.2;
+  private static final double kI_rotational = 0.0;
+  private static final double kD_rotational = 0.8;
 
   public AutoDriveCommand(SimulatorDriveSubsystem driveSubsystem, MagicPositionSensor positionSensor, MagicTargetSensor targetSensor) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -49,12 +57,13 @@ public class AutoDriveCommand extends CommandBase {
     double rotationSpeed = positionSensor.getRobotRotationalSpeed();
     // Align with the target position
 
-    if (distance < DISTANCE_CLOSE_ENOUGH) {
+    if (distance < DISTANCE_CLOSE_ENOUGH && speed < SPEED_CLOSE_ENOUGH) {
       // Made it!
+      
       isDone = true;
     } else if (Math.abs(heading) < HEADING_CLOSE_ENOUGH) {
       // drive towards the target!
-      driveSubsystem.setAcceleration(kP_linear * distance, 0.0);
+      driveSubsystem.setAcceleration(kP_linear * distance - kD_linear * speed, 0.0);
     } else {
       driveSubsystem.setAcceleration(0.0, kP_rotational * heading - kD_rotational * rotationSpeed);
     }

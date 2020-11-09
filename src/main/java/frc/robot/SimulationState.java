@@ -10,8 +10,7 @@ public class SimulationState {
 	private static final double MAX_SPEED = 10.0; // m/s: really fast!
 	private static final double MAX_ROTATIONAL_SPEED = 2.0 * Math.PI; // 60 RPM seems pretty fast!
 
-    // Where are we going? (4.0, 4.0)! When? REAL SOON!
-    private final Translation2d target = new Translation2d(4.0, 4.0);
+    private final Translation2d target = new Translation2d(8.0, 4.0);
 
     public static class SpeedPair {
 	    public final double linear;
