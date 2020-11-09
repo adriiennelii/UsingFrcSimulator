@@ -8,7 +8,7 @@ import frc.robot.util.Field2d;
 public class SimulationState {
 	private static final double MAX_ACCEL = 3.0; // That's pretty good accel!
 	private static final double MAX_SPEED = 10.0; // m/s: really fast!
-	private static final double MAX_ROTATIONAL_SPEED = 2.0 * Math.PI; // 60 RPM seems pretty fast!
+	private static final double MAX_ROTATIONAL_SPEED = 2.0 * Math.PI; // seems pretty fast!
 
     private final Translation2d target = new Translation2d(8.0, 4.0);
 

@@ -20,7 +20,6 @@ public class MagicTargetSensor {
         Pose2d robotPosition = simulationState.getRobotPosition();
         Translation2d robotTranslation = robotPosition.getTranslation();
         Translation2d vectorToTarget = target.minus(robotTranslation);
-        logger.error("vector to target: "+vectorToTarget);
         Rotation2d rotation = new Rotation2d(vectorToTarget.getX(), vectorToTarget.getY());
         Rotation2d robotRotation = robotPosition.getRotation();
         return rotation.minus(robotRotation).getDegrees();

@@ -25,12 +25,12 @@ public class AutoDriveCommand extends CommandBase {
   private static final double SPEED_CLOSE_ENOUGH = 0.4;
   private static final double HEADING_CLOSE_ENOUGH = 1.0;
 
-  private static final double kP_linear = 0.2;
+  private static final double kP_linear = 0.1;
   private static final double kI_linear = 0.0;
-  private static final double kD_linear = 0.2;
+  private static final double kD_linear = 0.35;
   private static final double kP_rotational = 0.2;
   private static final double kI_rotational = 0.0;
-  private static final double kD_rotational = 0.8;
+  private static final double kD_rotational = 1.9;
 
   public AutoDriveCommand(SimulatorDriveSubsystem driveSubsystem, MagicPositionSensor positionSensor, MagicTargetSensor targetSensor) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -57,9 +57,8 @@ public class AutoDriveCommand extends CommandBase {
     double rotationSpeed = positionSensor.getRobotRotationalSpeed();
     // Align with the target position
 
-    if (distance < DISTANCE_CLOSE_ENOUGH && speed < SPEED_CLOSE_ENOUGH) {
-      // Made it!
-      
+    if (distance < DISTANCE_CLOSE_ENOUGH) {
+      // Made it!      
       isDone = true;
     } else if (Math.abs(heading) < HEADING_CLOSE_ENOUGH) {
       // drive towards the target!
