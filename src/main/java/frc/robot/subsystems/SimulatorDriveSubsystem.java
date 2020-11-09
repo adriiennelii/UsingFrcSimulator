@@ -15,13 +15,13 @@ public class SimulatorDriveSubsystem extends SubsystemBase {
 
   private double linearAcceleration;
   private double rotationalAcceleration;
+  private boolean isBraking;
 
   /**
    */
   public SimulatorDriveSubsystem(SimulationState simulationState) {
     this.simulationState = simulationState;
-    linearAcceleration = 0.0;
-    rotationalAcceleration = 0.0;    
+    reset();
   }
 
   public void setAcceleration(double linearAcceleration, double rotationalAcceleration) {
@@ -29,13 +29,19 @@ public class SimulatorDriveSubsystem extends SubsystemBase {
     this.rotationalAcceleration = rotationalAcceleration;
   }
 
+  public void setBrakes(boolean isBraking) {
+    this.isBraking = isBraking;
+  }
+
   public void reset() {
     linearAcceleration = 0.0;
     rotationalAcceleration = 0.0;
+    isBraking = false;
   }
 
   @Override
   public void periodic() {
+    simulationState.setBraking(isBraking);
     simulationState.updateSimulationState(linearAcceleration, rotationalAcceleration);
   }
 }

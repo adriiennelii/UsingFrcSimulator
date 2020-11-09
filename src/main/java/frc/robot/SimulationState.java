@@ -28,9 +28,9 @@ public class SimulationState {
     private double robotRotationalSpeed;
     private long lastNanos;
 	private static final double ROTATIONAL_FRICTION_COEFFICIENT = 0.1;
-	private static final double BRAKING_ROTATIONAL_FRICTION_COEFFICIENT = 1.0;
+	private static final double BRAKING_ROTATIONAL_FRICTION_COEFFICIENT = 2.0;
 	private static final double LINEAR_FRICTION_COEFFICIENT = 0.1;
-	private static final double BRAKING_LINEAR_FRICTION_COEFFICIENT = 1.0;
+	private static final double BRAKING_LINEAR_FRICTION_COEFFICIENT = 2.0;
 	private static final double ONE_BILLION = 1000000000.0;
 	private boolean isBraking;
 
