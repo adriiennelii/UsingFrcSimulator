@@ -41,10 +41,33 @@ public class AutoDriveCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    //means distance from target
     double distanceToTarget = targetSensor.getDistanceToTarget();
+    //means how much to rotate from robot to target (calculated by rotation of target minus rotatation of robot to get how much to rotate)
     double headingToTarget = targetSensor.getHeadingToTarget();
+    //spped of robot
     double robotLinearSpeed = positionSensor.getRobotLinearSpeed();
+    //speed of robot when rotating 
     double robotRotationSpeed = positionSensor.getRobotRotationalSpeed();
+
+//if there's distance from target to robot and rotation of robot isn't aligned and aimed below target, then needs to rotate left while accelerating to be in line with target. 
+if (distanceToTarget > 0.0 && headingToTarget > 0.000) {
+  driveSubsystem.setAcceleration(0.5, 0.6);
+//if there's distance from target to robot and rotation of robot isn't aligned and aimed above target, then needs to rotate right while accelerating to be in line with target. 
+} else if (distanceToTarget > 0.0 && headingToTarget < 0.000) {
+  driveSubsystem.setAcceleration(0.5, -0.6);
+//if there's no distance from target to robot and headingToTarget = 0 , then brake. 
+} else {
+  driveSubsystem.setBrakes(true);
+}
+
+//when robot is 2 meters away from robot, then start braking to come to full stop around target 
+if (distanceToTarget < 2.00000) {
+  driveSubsystem.setBrakes(true);
+  isDone = true;
+}
+
+System.out.println(distanceToTarget + " " + headingToTarget + " " + robotLinearSpeed + " " + robotRotationSpeed);
 
     // TODO: Make the robot navigate to the field position X=8.0, Y=4.0
     //
